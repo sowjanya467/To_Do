@@ -1,6 +1,5 @@
 package com.todo.note.userservice.controller;
 
-
 import javax.mail.MessagingException;
 import javax.servlet.http.HttpServletRequest;
 
@@ -12,12 +11,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.todo.note.userservice.model.ForgotPasswordModel;
 import com.todo.note.userservice.model.RegistrationModel;
 import com.todo.note.userservice.model.ResponseModel;
-import com.todo.note.userservice.model.User;
 import com.todo.note.userservice.service.UserServiceImplementation;
 import com.todo.note.utility.Utility;
 import com.todo.note.utility.exceptions.LoginExceptionHandling;
@@ -40,7 +39,7 @@ public class UserController {
 
 	@Autowired
 	UserServiceImplementation userService = new UserServiceImplementation();
-	Utility utility=new Utility();
+	Utility utility = new Utility();
 
 	/**
 	 * purpose:method to login
@@ -48,14 +47,16 @@ public class UserController {
 	 * @param checkUser
 	 * @return response
 	 * @throws LoginExceptionHandling
+	 * @throws MessagingException
+	 * @throws ToDoException 
 	 */
 
 	@RequestMapping(value = "/login/", method = RequestMethod.POST)
-	public ResponseEntity<ResponseModel> login(@RequestBody User checkUser)
-			throws UserExceptionHandling, LoginExceptionHandling {
-		logger.info("Logging User : {}", checkUser);
+	public ResponseEntity<ResponseModel> login(@RequestParam String mail, @RequestParam String password)
+			throws LoginExceptionHandling, MessagingException, ToDoException {
+		String message = userService.login(mail, password);
+		// logger.info("Logging User : {}", checkUser);
 
-		String message = userService.login(checkUser.getEmailId(), checkUser.getPassword());
 		ResponseModel response = new ResponseModel();
 		response.setMessage(message);
 		response.setStatus(200);
@@ -64,7 +65,7 @@ public class UserController {
 
 	}
 
-    /**
+	/**
 	 * purpose:method to register
 	 * 
 	 * @param checkUser
@@ -73,11 +74,9 @@ public class UserController {
 	 * @throws MessagingException
 	 */
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@RequestMapping(value = "/register/", method = RequestMethod.POST)
 	public ResponseEntity<ResponseModel> register(@RequestBody RegistrationModel checkUser)
 			throws UserExceptionHandling, MessagingException {
-		//utility.isValidateAllFields(checkUser);
 		logger.info("Register user : {}", checkUser);
 
 		userService.registerUser(checkUser);
@@ -96,10 +95,11 @@ public class UserController {
 
 	@RequestMapping(value = "/activateaccount/", method = RequestMethod.GET)
 	public ResponseEntity<String> activateAccount(HttpServletRequest request) {
+		logger.info("activate the account");
 		String jwtToken = request.getQueryString();
 		System.out.println(jwtToken);
 
-		if (!userService.activateAc("   "+jwtToken)) {
+		if (!userService.activateAc("   " + jwtToken)) {
 
 			return new ResponseEntity<String>("Account not activated ", HttpStatus.NOT_FOUND);
 		}
@@ -112,12 +112,11 @@ public class UserController {
 	 * 
 	 * @param CheckUser
 	 * @return
-	 * @throws MessagingException 
+	 * @throws MessagingException
 	 */
 	@RequestMapping(value = "/forgotpassword/", method = RequestMethod.POST)
-	public ResponseEntity<String> forgotPassword(@RequestBody User CheckUser) throws MessagingException {
-		String email = CheckUser.getEmailId();
-		if (userService.forgotPassword(email)) {
+	public ResponseEntity<String> forgotPassword(@RequestParam String emailId) throws MessagingException {
+		if (userService.forgotPassword(emailId)) {
 			return new ResponseEntity<String>("invalid", HttpStatus.NOT_FOUND);
 		}
 		String message = "link to set your password has been sent successfully";

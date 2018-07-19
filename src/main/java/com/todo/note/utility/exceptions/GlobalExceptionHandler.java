@@ -1,6 +1,5 @@
 package com.todo.note.utility.exceptions;
 
-
 import javax.servlet.http.HttpServletRequest;
 
 import org.slf4j.Logger;
@@ -12,16 +11,13 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 
 import com.todo.note.userservice.model.ResponseModel;
 
-
-
-
 /*************************************************************************************************************
  *
  * purpose:Global exception handling
  *
  * @author sowjanya467
  * @version 1.0
- * @since -05-18
+ * @since 15-05-18
  *
  **************************************************************************************************/
 @ControllerAdvice
@@ -29,6 +25,12 @@ public class GlobalExceptionHandler {
 
 	private final Logger logger = LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
+	/**
+	 * method to handle the registration exception
+	 * 
+	 * @param exception
+	 * @return
+	 */
 	@ExceptionHandler(UserExceptionHandling.class)
 	public ResponseEntity<ResponseModel> handleRegistrationException(UserExceptionHandling exception) {
 		logger.info("Error occured for: " + exception.getMessage(), exception);
@@ -39,6 +41,12 @@ public class GlobalExceptionHandler {
 		return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
 	}
 
+	/**
+	 * method to handle the login exception
+	 * 
+	 * @param exception
+	 * @return
+	 */
 	@ExceptionHandler(LoginExceptionHandling.class)
 	public ResponseEntity<ResponseModel> handleLoginException(UserExceptionHandling exception) {
 		logger.info("Error occured for: " + exception.getMessage(), exception);
@@ -49,6 +57,12 @@ public class GlobalExceptionHandler {
 		return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
 	}
 
+	/**
+	 * method to handle the exception
+	 * 
+	 * @param exception
+	 * @return
+	 */
 	@ExceptionHandler(ToDoException.class)
 	public ResponseEntity<ResponseModel> handlesetPasswordException(ToDoException exception) {
 		logger.info("Error occured: " + exception.getMessage(), exception);
@@ -60,6 +74,7 @@ public class GlobalExceptionHandler {
 	}
 
 	/**
+	 * method to handle if any internal exception occurs
 	 * 
 	 * @param exception
 	 * @param request

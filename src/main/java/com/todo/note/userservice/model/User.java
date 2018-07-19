@@ -10,16 +10,16 @@ package com.todo.note.userservice.model;
 * **************************************************************************************************/
 import java.io.Serializable;
 
-import org.springframework.data.annotation.Id;
+import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 @Document(collection = "logindb")
 public class User implements Serializable {
 
 	private static final long serialVersionUID = 1L;
-	@Id
+	private ObjectId id;
+
 	private String emailId;
-	private Long userId;
 	private String userName;
 	private String password;
 	private String phoneNumber;
@@ -40,12 +40,7 @@ public class User implements Serializable {
 		this.activate = activate;
 	}
 
-	/**
-	 * @return the userId
-	 */
-	public Long getUserId() {
-		return userId;
-	}
+	
 
 	/*
 	 * (non-Javadoc)
@@ -54,17 +49,11 @@ public class User implements Serializable {
 	 */
 	@Override
 	public String toString() {
-		return "User [emailId=" + emailId + ", userId=" + userId + ", userName=" + userName + ", password=" + password
+		return "User [emailId=" + emailId + ", userName=" + userName + ", password=" + password
 				+ ", phoneNumber=" + phoneNumber + ", activate=" + activate + "]";
 	}
 
-	/**
-	 * @param userId
-	 *            the userId to set
-	 */
-	public void setUserId(Long userId) {
-		this.userId = userId;
-	}
+	
 
 	/**
 	 * @return the userName
@@ -125,4 +114,13 @@ public class User implements Serializable {
 	public void setPhoneNumber(String phoneNumber) {
 		this.phoneNumber = phoneNumber;
 	}
+
+	public ObjectId getId() {
+		return id;
+	}
+
+	public void setId(ObjectId id) {
+		this.id = id;
+	}
+
 }

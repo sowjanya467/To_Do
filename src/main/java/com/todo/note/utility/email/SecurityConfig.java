@@ -1,11 +1,10 @@
-package com.todo.note.utilityemail;
+package com.todo.note.utility.email;
 
 import java.util.Date;
 
 import org.springframework.stereotype.Service;
 
 import com.todo.note.userservice.model.RegistrationModel;
-import com.todo.note.userservice.model.User;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtBuilder;
