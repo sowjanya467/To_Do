@@ -4,9 +4,11 @@ import java.util.Optional;
 
 import javax.mail.MessagingException;
 
+import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -40,15 +42,20 @@ import io.jsonwebtoken.Claims;
 public class UserServiceImplementation {
 
 	@Autowired
-	private UserRepository repo;
+	UserRepository repo;
 	@Autowired
 	private PasswordEncoder encoder;
 	@Autowired
 	EmailService emailService;
 	@Autowired
 	MailModel mailDto;
-	@Autowired 
+	@Autowired
 	Producer produce;
+	@Autowired
+	Environment environment;
+	@Autowired
+	ModelMapper mapper;
+
 	public static final Logger logger = LoggerFactory.getLogger(UserServiceImplementation.class);
 
 	Utility utility = new Utility();
@@ -65,38 +72,33 @@ public class UserServiceImplementation {
 	 * @return User
 	 * @throws LoginExceptionHandling
 	 * @throws MessagingException
-	 * @throws ToDoException 
+	 * @throws ToDoException
 	 */
-	public String login(String emailId, String password) throws LoginExceptionHandling, MessagingException, ToDoException {
+	public String login(String emailId, String password)
+			throws LoginExceptionHandling, MessagingException, ToDoException {
 
-		Optional<User> user = repo.findByemailId(emailId);
+		Optional<User> user = repo.findByEmailId(emailId);
+		User curUser=user.get();
 
 		if (!user.isPresent()) {
 			throw new LoginExceptionHandling("user with this email id doesnot exist");
-		} 
-		if(user.get().getActivate().equals("false"))
-		{
+		}
+		if (user.get().getActivate().equals("false")) {
 			throw new ToDoException("account is not activated");
 		}
-		
+
 		else {
 
 			if (encoder.matches(password, user.get().getPassword())) {
 
 				logger.info("looged in sucessfully!! continue your works");
-				String jwtToken = utility.createToken(emailId);
-				mailDto.setToMailAddress(emailId);
-				mailDto.setSubject("login");
-				mailDto.setBody(jwtToken);
-				produce.produceMail(mailDto);
-				//emailService.sendEmail(emailId, jwtToken, "conformation");
+				String jwtToken = utility.createTokens(curUser);
+				return jwtToken;
 
 			} else {
-				return "password incorrect";
+				throw new ToDoException("incorrect details");
 			}
 		}
-		String message = "HI " + user.get().getUserName() + "    you can continue your works";
-		return message;
 
 	}
 
@@ -112,28 +114,22 @@ public class UserServiceImplementation {
 	public void registerUser(RegistrationModel userReg) throws UserExceptionHandling, MessagingException {
 		logger.info("checking the fields are valid or not");
 		if (!utility.isValidateAllFields(userReg)) {
-			Optional<User> checkUser = repo.findByemailId(userReg.getEmailId());
+			Optional<User> checkUser = repo.findByEmailId(userReg.getEmailId());
 			if (checkUser.isPresent()) {
-				logger.info("user with this email id already exists!!!");
 				throw new UserExceptionHandling("user with this email id is already present");
-			}
-			User user = new User();
-			user.setEmailId(userReg.getEmailId());
-			user.setUserName(userReg.getUserName());
-			user.setPassword(encoder.encode(userReg.getPassword()));
-			user.setPhoneNumber(userReg.getPhoneNumber());
-			user.setActivate("false");
-			User save = repo.save(user);
-            System.out.println(save.getId()+"----------------");
-			repo.findById(userReg.getEmailId());
-			String token = utility.createTokens(userReg);
-		    mailDto.setToMailAddress(userReg.getEmailId());
-			mailDto.setSubject("Hi " + userReg.getUserName());
-		     mailDto.setBody(
-					"Activate your accout click on this link:" + "http://192.168.0.9:8080/activateaccount/?" + token);
 
+			}
+			userReg.setPassword(encoder.encode(userReg.getPassword()));
+
+			User user = mapper.map(userReg, User.class);
+            user=repo.save(user);
+			System.out.println(user);
+
+			String token = utility.createTokens(user);
+			mailDto.setToMailAddress(userReg.getEmailId());
+			mailDto.setSubject("Hi " + userReg.getUserName());
+			mailDto.setBody(environment.getProperty("activation.link") + token);
 			produce.produceMail(mailDto);
-			//emailService.sendEmail(to, subject, body);
 
 		}
 	}
@@ -147,7 +143,7 @@ public class UserServiceImplementation {
 	public boolean activateAc(String jwt) {
 
 		Claims claims = utility.parseJwt(jwt);
-		Optional<User> user = repo.findByemailId(claims.getSubject());
+		Optional<User> user = repo.findById(claims.getSubject());
 		user.get().setActivate("true");
 		System.out.println("activate");
 		repo.save(user.get());
@@ -171,7 +167,7 @@ public class UserServiceImplementation {
 		}
 		Claims claims = utility.parseJwt(tokenJwt);
 
-		Optional<User> checkUser = repo.findByemailId(claims.getId());
+		Optional<User> checkUser = repo.findByEmailId(claims.getId());
 		System.out.println(claims.getSubject());
 		User user = checkUser.get();
 		user.setPassword(encoder.encode(f.getConfirmPassword()));
@@ -187,15 +183,14 @@ public class UserServiceImplementation {
 	 */
 	public boolean forgotPassword(String emailId) throws MessagingException {
 		String jwtToken = utility.createToken(emailId);
-		//String to = emailId;
-		String subject = "recover your password";
-		String body = "recover your password by clicking" + "http://192.168.0.8:8080/resetPassword/?" + jwtToken;
-		mailDto.setToMailAddress(emailId);
-		mailDto.setSubject(subject);
-		mailDto.setBody(body);
-		produce.produceMail(mailDto);
 		
-		//emailService.sendEmail(to, subject, body);
+		mailDto.setToMailAddress(emailId);
+		System.out.println(emailId);
+		mailDto.setSubject(environment.getProperty("forgotPassword.subject"));
+		mailDto.setBody(environment.getProperty("resetPassword.link") + jwtToken);
+		produce.produceMail(mailDto);
+
+		// emailService.sendEmail(to, subject, body);
 		return false;
 	}
 }

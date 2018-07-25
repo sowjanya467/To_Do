@@ -2,7 +2,6 @@ package com.todo.note.userservice.model;
 
 import java.io.Serializable;
 
-import org.springframework.data.annotation.Id;
 /*************************************************************************************************************
 *
 * purpose:Methode to create a JWT token and decode the token
@@ -14,13 +13,14 @@ import org.springframework.data.annotation.Id;
 
 public class RegistrationModel implements Serializable {
 
+	
 	private static final long serialVersionUID = 1L;
-	@Id
+	
 	private String emailId;
 	private String userName;
 	private String password;
 	private String phoneNumber;
-
+	
 	/**
 	 * @return the emailId
 	 */
@@ -82,5 +82,6 @@ public class RegistrationModel implements Serializable {
 		this.phoneNumber = phoneNumber;
 	}
 
-
+	
+	
 }

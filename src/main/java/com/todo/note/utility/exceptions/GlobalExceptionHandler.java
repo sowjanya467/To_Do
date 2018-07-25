@@ -33,11 +33,9 @@ public class GlobalExceptionHandler {
 	 */
 	@ExceptionHandler(UserExceptionHandling.class)
 	public ResponseEntity<ResponseModel> handleRegistrationException(UserExceptionHandling exception) {
-		logger.info("Error occured for: " + exception.getMessage(), exception);
 		ResponseModel response = new ResponseModel();
 		response.setMessage(exception.getMessage());
 		response.setStatus(-3);
-		System.out.println("global exception");
 		return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
 	}
 
@@ -49,11 +47,9 @@ public class GlobalExceptionHandler {
 	 */
 	@ExceptionHandler(LoginExceptionHandling.class)
 	public ResponseEntity<ResponseModel> handleLoginException(UserExceptionHandling exception) {
-		logger.info("Error occured for: " + exception.getMessage(), exception);
 		ResponseModel response = new ResponseModel();
 		response.setMessage(exception.getMessage());
 		response.setStatus(-3);
-		System.out.println("global exception");
 		return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
 	}
 
@@ -65,7 +61,6 @@ public class GlobalExceptionHandler {
 	 */
 	@ExceptionHandler(ToDoException.class)
 	public ResponseEntity<ResponseModel> handlesetPasswordException(ToDoException exception) {
-		logger.info("Error occured: " + exception.getMessage(), exception);
 		ResponseModel response = new ResponseModel();
 		response.setMessage(exception.getMessage());
 		response.setStatus(-3);

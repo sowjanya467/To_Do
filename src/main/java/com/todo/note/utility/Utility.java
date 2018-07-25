@@ -5,6 +5,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import com.todo.note.userservice.model.RegistrationModel;
+import com.todo.note.userservice.model.User;
 import com.todo.note.utility.exceptions.UserExceptionHandling;
 
 import io.jsonwebtoken.Claims;
@@ -67,6 +68,7 @@ public class Utility {
 
 	public static boolean isValidUserName(String userName) {
 		Pattern userNamePattern = Pattern.compile("^[a-z0-9_-]{6,14}$");
+		System.err.println(userName);
 		Matcher matcher = userNamePattern.matcher(userName);
 		return matcher.matches();
 
@@ -106,16 +108,38 @@ public class Utility {
 
 	}
 
-	public String createTokens(RegistrationModel user) {
+	public String createTokens(User user) {
 		SignatureAlgorithm signatureAlgorithm = SignatureAlgorithm.HS256;
 
-		String subject = user.getEmailId();
-		String issuer = user.getUserName();
+		String subject = user.get_id();
+		String issuer = user.getEmailId();
 		Date date = new Date();
 		JwtBuilder builder = Jwts.builder().setSubject(subject).setIssuedAt(date).setIssuer(issuer)
 				.signWith(signatureAlgorithm, KEY);
 		return builder.compact();
 
 	}
+	public static <T> T checkNotNull(T resource) throws UserExceptionHandling
+	{
+		if(resource==null)
+		{
+			throw new UserExceptionHandling("note already created");
+			
+		}
+		return resource;
+		
+	}
+	public static <T> T CheckNull(T resource) throws UserExceptionHandling {
+        if (resource == null) {
+            throw new UserExceptionHandling(("note with this id does not exist"));
+        }
+        return resource;
+    }
+	public static <T> T CheckPass(T resource) throws UserExceptionHandling {
+        if (resource == null) {
+            throw new UserExceptionHandling(("invalid password"));
+        }
+        return resource;
+    }
 
 }

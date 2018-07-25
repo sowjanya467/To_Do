@@ -15,55 +15,51 @@ import org.springframework.boot.autoconfigure.amqp.SimpleRabbitListenerContainer
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-
 @Configuration
 public class RabbitMqConfiguration {
-   
-     @Value("")
-     String queueName;
-     
-     @Value("")
-     String exchanger;
-     
-     @Value("")
-     private String routingKey;
-     
 
-    
-    @Bean
-    Queue queue() {
-        return new Queue(queueName, false);
-    }
+	@Value("")
+	String queueName;
 
-    @Bean
-    DirectExchange exchange() {
-        return new DirectExchange(exchanger);
-    }
+	@Value("")
+	String exchanger;
 
-    @Bean
-    Binding binding(Queue queue, DirectExchange exchange) {
-        return BindingBuilder.bind(queue).to(exchange).with(routingKey);
-    }
+	@Value("")
+	private String routingKey;
 
-   
-    @Bean
-    public AmqpTemplate rabbitTemplate(ConnectionFactory connectionFactory) {
-        final RabbitTemplate rabbitTemplate = new RabbitTemplate(connectionFactory);
-        rabbitTemplate.setMessageConverter(jsonMessageConverter());
-        return rabbitTemplate;
-    }
+	@Bean
+	Queue queue() {
+		return new Queue(queueName, false);
+	}
 
-    @Bean
-    public MessageConverter jsonMessageConverter() {
-        return new Jackson2JsonMessageConverter();
-    }
+	@Bean
+	DirectExchange exchange() {
+		return new DirectExchange(exchanger);
+	}
 
-    @Bean
-    public SimpleRabbitListenerContainerFactory jsaFactory(ConnectionFactory connectionFactory,
-            SimpleRabbitListenerContainerFactoryConfigurer configurer) {
-        SimpleRabbitListenerContainerFactory factory = new SimpleRabbitListenerContainerFactory();
-        configurer.configure(factory, connectionFactory);
-        factory.setMessageConverter(jsonMessageConverter());
-        return factory;
-    }
+	@Bean
+	Binding binding(Queue queue, DirectExchange exchange) {
+		return BindingBuilder.bind(queue).to(exchange).with(routingKey);
+	}
+
+	@Bean
+	public AmqpTemplate rabbitTemplate(ConnectionFactory connectionFactory) {
+		final RabbitTemplate rabbitTemplate = new RabbitTemplate(connectionFactory);
+		rabbitTemplate.setMessageConverter(jsonMessageConverter());
+		return rabbitTemplate;
+	}
+
+	@Bean
+	public MessageConverter jsonMessageConverter() {
+		return new Jackson2JsonMessageConverter();
+	}
+
+	@Bean
+	public SimpleRabbitListenerContainerFactory jsaFactory(ConnectionFactory connectionFactory,
+			SimpleRabbitListenerContainerFactoryConfigurer configurer) {
+		SimpleRabbitListenerContainerFactory factory = new SimpleRabbitListenerContainerFactory();
+		configurer.configure(factory, connectionFactory);
+		factory.setMessageConverter(jsonMessageConverter());
+		return factory;
+	}
 }

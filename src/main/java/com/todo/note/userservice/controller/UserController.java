@@ -2,6 +2,7 @@ package com.todo.note.userservice.controller;
 
 import javax.mail.MessagingException;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.todo.note.userservice.model.ForgotPasswordModel;
+import com.todo.note.userservice.model.LoginDto;
 import com.todo.note.userservice.model.RegistrationModel;
 import com.todo.note.userservice.model.ResponseModel;
 import com.todo.note.userservice.service.UserServiceImplementation;
@@ -52,16 +54,17 @@ public class UserController {
 	 */
 
 	@RequestMapping(value = "/login/", method = RequestMethod.POST)
-	public ResponseEntity<ResponseModel> login(@RequestParam String mail, @RequestParam String password)
+	public ResponseEntity<ResponseModel> login(@RequestBody LoginDto login,HttpServletResponse response)
 			throws LoginExceptionHandling, MessagingException, ToDoException {
-		String message = userService.login(mail, password);
+		String token = userService.login(login.getMailId(),login.getPassword());
 		// logger.info("Logging User : {}", checkUser);
 
-		ResponseModel response = new ResponseModel();
-		response.setMessage(message);
-		response.setStatus(200);
+		response.addHeader("Authorization", token);
+		ResponseModel response1 = new ResponseModel();
+		response1.setMessage("logged in successfully");
+		response1.setStatus(200);
 
-		return new ResponseEntity<>(response, HttpStatus.CREATED);
+		return new ResponseEntity<>(response1, HttpStatus.CREATED);
 
 	}
 
@@ -115,12 +118,17 @@ public class UserController {
 	 * @throws MessagingException
 	 */
 	@RequestMapping(value = "/forgotpassword/", method = RequestMethod.POST)
-	public ResponseEntity<String> forgotPassword(@RequestParam String emailId) throws MessagingException {
+	public ResponseEntity<ResponseModel> forgotPassword(@RequestParam String emailId) throws MessagingException {
 		if (userService.forgotPassword(emailId)) {
-			return new ResponseEntity<String>("invalid", HttpStatus.NOT_FOUND);
+			ResponseModel response = new ResponseModel();
+			response.setMessage("mail id does not exist");
+			response.setStatus(3);
+			//return new ResponseEntity<ResponseModel>("invalid", HttpStatus.NOT_FOUND);
 		}
-		String message = "link to set your password has been sent successfully";
-		return new ResponseEntity<String>(message, HttpStatus.OK);
+		ResponseModel response = new ResponseModel();
+		response.setMessage("link to set your password has been sent successfully");
+		response.setStatus(200);
+		return new ResponseEntity<ResponseModel>(response, HttpStatus.OK);
 
 	}
 
@@ -133,7 +141,7 @@ public class UserController {
 	 * @throws ToDoException
 	 */
 
-	@RequestMapping(value = "/resetPassword", method = RequestMethod.POST)
+	@RequestMapping(value = "/resetpassword", method = RequestMethod.POST)
 	public ResponseEntity<ResponseModel> resetPassword(@RequestBody ForgotPasswordModel model, HttpServletRequest req)
 			throws ToDoException {
 		String token = req.getQueryString();

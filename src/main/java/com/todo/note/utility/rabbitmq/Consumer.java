@@ -14,11 +14,13 @@ public class Consumer
 {
 	@Autowired
 	EmailService emailService;
+	
 	@RabbitListener(queues="${jsa.rabbitmq.queue}")
 	public void reciveMsg(MailModel mail) throws MessagingException
 	{
+		
+//		System.out.println(mail);
 		emailService.sendMail(mail);
-		System.out.println("mail= "+mail);
 	}
 
 }

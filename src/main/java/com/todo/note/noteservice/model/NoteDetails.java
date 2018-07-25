@@ -9,18 +9,6 @@ public class NoteDetails
 	@NotBlank
 	private String title;
 	
-	@NotBlank
-	private String content;
-	@LastModifiedDate
-	private String updatedAt;
-	
-
-	public String getUpdatedAt() {
-		return updatedAt;
-	}
-	public void setUpdatedAt(String updatedAt) {
-		this.updatedAt = updatedAt;
-	}
 	public String getTitle() {
 		return title;
 	}
@@ -33,5 +21,15 @@ public class NoteDetails
 	public void setContent(String content) {
 		this.content = content;
 	}
+	public String getUpdatedAt() {
+		return updatedAt;
+	}
+	public void setUpdatedAt(String updatedAt) {
+		this.updatedAt = updatedAt;
+	}
+	@NotBlank
+	private String content;
+	@LastModifiedDate
+private String updatedAt;
 
 }

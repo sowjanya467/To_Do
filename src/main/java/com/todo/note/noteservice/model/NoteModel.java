@@ -1,13 +1,19 @@
 package com.todo.note.noteservice.model;
 
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
 import javax.validation.constraints.NotBlank;
 
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.Field;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.todo.note.dto.LabelDto;
 
 @Document(collection = "notedb")
 @JsonIgnoreProperties(value = { "createdAt", "editedAt" }, allowGetters = true)
@@ -17,7 +23,7 @@ public class NoteModel {
 	private String id;
 
 	@NotBlank
-	private String emailId;
+	private String userId;
 
 	@NotBlank
 	private String title;
@@ -27,34 +33,37 @@ public class NoteModel {
 	private String createdAt;
 	@LastModifiedDate
 	private String editedAt;
+
+	private boolean pin;
+	private boolean archive;
+
+	private boolean trash;
+	private Date date;
+	@Field("label")
+	private List<LabelDto> label;
 	
-	private String pin;
-	private String label;
-	private String archive;
+
 	
 
-	public String getPin() {
-		return pin;
-	}
+	
 
-	public void setPin(String pin) {
-		this.pin = pin;
-	}
-
-	public String getLabel() {
+	public List<LabelDto> getLabel() {
+		if(label==null) {
+			this.label=new ArrayList<>();
+		}
 		return label;
 	}
 
-	public void setLabel(String label) {
+	public void setLabel(List<LabelDto> label) {
 		this.label = label;
 	}
 
-	public String getArchive() {
-		return archive;
+	public Date getDate() {
+		return date;
 	}
 
-	public void setArchive(String archive) {
-		this.archive = archive;
+	public void setDate(Date date) {
+		this.date = date;
 	}
 
 	public String getId() {
@@ -63,6 +72,30 @@ public class NoteModel {
 
 	public void setId(String id) {
 		this.id = id;
+	}
+
+	public String getUserId() {
+		return userId;
+	}
+
+	public void setUserId(String userId) {
+		this.userId = userId;
+	}
+
+	public String getTitle() {
+		return title;
+	}
+
+	public void setTitle(String title) {
+		this.title = title;
+	}
+
+	public String getContent() {
+		return content;
+	}
+
+	public void setContent(String content) {
+		this.content = content;
 	}
 
 	public String getCreatedAt() {
@@ -81,28 +114,36 @@ public class NoteModel {
 		this.editedAt = editedAt;
 	}
 
-	public String getContent() {
-		return content;
+	public boolean isPin() {
+		return pin;
 	}
 
-	public void setContent(String content) {
-		this.content = content;
+	public void setPin(boolean pin) {
+		this.pin = pin;
 	}
 
-	public String getEmailId() {
-		return emailId;
+	public boolean isArchive() {
+		return archive;
 	}
 
-	public void setEmailId(String emailId) {
-		this.emailId = emailId;
+	public void setArchive(boolean archive) {
+		this.archive = archive;
 	}
 
-	public String getTitle() {
-		return title;
+	public boolean isTrash() {
+		return trash;
 	}
 
-	public void setTitle(String title) {
-		this.title = title;
+	public void setTrash(boolean trash) {
+		this.trash = trash;
 	}
 
+	@Override
+	public String toString() {
+		return "NoteModel [id=" + id + ", userId=" + userId + ", title=" + title + ", content=" + content
+				+ ", createdAt=" + createdAt + ", editedAt=" + editedAt + ", pin=" + pin + ", archive=" + archive
+				+ ", trash=" + trash + ", date=" + date + ", label=" + label + "]";
+	}
+
+	
 }

@@ -10,17 +10,17 @@ import com.todo.note.userservice.model.MailModel;
 @Service
 public class ProducerImplementation implements Producer {
 
-	@Autowired 
+	@Autowired
 	private AmqpTemplate amqpTemplate;
-	
+
 	@Value("${jsa.rabbitmq.exchange}")
 	private String exchange;
-	
+
 	@Value("${jsa.rabbitmq.routingkey}")
 	private String routingKey;
-	
+
 	@Override
-	public void produceMail(MailModel mail){
+	public void produceMail(MailModel mail) {
 		amqpTemplate.convertAndSend(exchange, routingKey, mail);
 		System.out.println("Send mail = " + mail);
 	}

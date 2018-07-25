@@ -10,49 +10,44 @@ package com.todo.note.userservice.model;
 * **************************************************************************************************/
 import java.io.Serializable;
 
-import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 @Document(collection = "logindb")
 public class User implements Serializable {
 
+	/**
+	 * 
+	 */
 	private static final long serialVersionUID = 1L;
-	private ObjectId id;
-
+	private String _id;
 	private String emailId;
 	private String userName;
 	private String password;
 	private String phoneNumber;
 	private String activate;
 
-	/**
-	 * @return the activate
-	 */
+
+	public String get_id() {
+		return _id;
+	}
+
+	public void set_id(String _id) {
+		this._id = _id;
+	}
+
 	public String getActivate() {
 		return activate;
 	}
 
-	/**
-	 * @param activate
-	 *            the activate to set
-	 */
 	public void setActivate(String activate) {
 		this.activate = activate;
 	}
-
-	
 
 	/*
 	 * (non-Javadoc)
 	 * 
 	 * @see java.lang.Object#toString()
 	 */
-	@Override
-	public String toString() {
-		return "User [emailId=" + emailId + ", userName=" + userName + ", password=" + password
-				+ ", phoneNumber=" + phoneNumber + ", activate=" + activate + "]";
-	}
-
 	
 
 	/**
@@ -60,6 +55,12 @@ public class User implements Serializable {
 	 */
 	public String getUserName() {
 		return userName;
+	}
+
+	@Override
+	public String toString() {
+		return "User [_id=" + _id + ", emailId=" + emailId + ", userName=" + userName + ", password=" + password
+				+ ", phoneNumber=" + phoneNumber + ", activate=" + activate + "]";
 	}
 
 	/**
@@ -113,14 +114,6 @@ public class User implements Serializable {
 	 */
 	public void setPhoneNumber(String phoneNumber) {
 		this.phoneNumber = phoneNumber;
-	}
-
-	public ObjectId getId() {
-		return id;
-	}
-
-	public void setId(ObjectId id) {
-		this.id = id;
 	}
 
 }
