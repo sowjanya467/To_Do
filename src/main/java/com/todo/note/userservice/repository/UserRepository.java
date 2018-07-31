@@ -18,7 +18,6 @@ import com.todo.note.userservice.model.User;
 @Repository
 public interface UserRepository extends MongoRepository<User, String> 
 {
-	//public User findByemailId(String mail);
 	public Optional<User> findByEmailId(String mail);
 
 

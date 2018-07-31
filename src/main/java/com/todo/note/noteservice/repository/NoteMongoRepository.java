@@ -20,25 +20,17 @@ import com.todo.note.noteservice.model.NoteModel;
 @Repository
 public interface NoteMongoRepository extends MongoRepository<NoteModel, String> {
 
-
 	public List<NoteModel> findByUserId(String id);
 
 	public Optional<NoteModel> findBytitle(String title);
 
-	public Optional<NoteModel> deleteBytitle(String title);
-
 	Optional<NoteModel> findById(String id);
-
-
-	NoteModel findByUserIdAndId(String UserId, String noteId);
-
 
 	void save(Optional<NoteModel> note);
 
+	@Query(value = "{ 'userId' : ?0, 'label._id' : ?1 }"/* , fields = "{ 'label.labelName' : 1 }" */)
+	public List<NoteModel> findByUserIdandLabel(String id, String labelId);
+
 	
-
-	@Query(value = "{ 'userId' : ?0, 'label.labelName' : ?1 }"/*, fields = "{ 'label.labelName' : 1 }"*/)
-	public List<NoteModel> findByUserBuy(String id,String name);
-
 
 }

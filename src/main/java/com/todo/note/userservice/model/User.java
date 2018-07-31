@@ -24,7 +24,7 @@ public class User implements Serializable {
 	private String userName;
 	private String password;
 	private String phoneNumber;
-	private String activate;
+	private boolean activate;
 
 
 	public String get_id() {
@@ -35,11 +35,11 @@ public class User implements Serializable {
 		this._id = _id;
 	}
 
-	public String getActivate() {
+	public boolean getActivate() {
 		return activate;
 	}
 
-	public void setActivate(String activate) {
+	public void setActivate(boolean activate) {
 		this.activate = activate;
 	}
 

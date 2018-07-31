@@ -15,6 +15,15 @@ import org.springframework.boot.autoconfigure.amqp.SimpleRabbitListenerContainer
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+/*************************************************************************************************************
+ *
+ * purpose:rabbitmq configuration
+ * 
+ * @author sowjanya467
+ * @version 1.0
+ * @since 10-07-18
+ *
+ **************************************************************************************************/
 @Configuration
 public class RabbitMqConfiguration {
 

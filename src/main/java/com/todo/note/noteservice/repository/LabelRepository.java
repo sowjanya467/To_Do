@@ -1,10 +1,12 @@
 package com.todo.note.noteservice.repository;
 
+import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Repository;
 
-import com.todo.note.dto.LabelDto;
+import com.todo.note.dto.Label;
 
 /*************************************************************************************************************
  *
@@ -17,15 +19,16 @@ import com.todo.note.dto.LabelDto;
  **************************************************************************************************/
 
 @Repository
-public interface LabelRepository extends MongoRepository<LabelDto, String> {
+public interface LabelRepository extends MongoRepository<Label, String> {
 
-	//List<LabelDto> findAllByUserId(String userId);
+	 List<Label> findAllByUserid(String userId);
 
-	LabelDto findByLabelName(String labelName);
+	Optional<Label> findByLabelName(String name);
 
-	LabelDto findBy_id(String id);
+	Label findByLabelId(String id);
+
+	void save(Optional<Label> labelFound);
 
 
-//	LabelDto findByLabelNameAndUserId(String labelName, String userId);
 
 }

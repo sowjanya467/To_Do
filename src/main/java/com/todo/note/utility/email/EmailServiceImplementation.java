@@ -27,18 +27,7 @@ public class EmailServiceImplementation implements EmailService
 	@Autowired
 	private JavaMailSender emailSender;
 
-	@Override
-	public void sendEmail(String to, String subject, String body) throws MessagingException
-	{
-
-		MimeMessage mimeMessage = emailSender.createMimeMessage();
-		MimeMessageHelper message = new MimeMessageHelper(mimeMessage);
-
-		message.setTo(to);
-		message.setSubject(subject);
-		message.setText(body);
-		emailSender.send(mimeMessage);
-	}
+	
 
 	@Override
 	public void sendMail(MailModel mail) throws MessagingException {

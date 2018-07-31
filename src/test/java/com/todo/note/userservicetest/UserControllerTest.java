@@ -39,7 +39,7 @@ public class UserControllerTest {
 
 	@Test
 	public void RegistrationTest() throws Exception {
-		mockMvc.perform(MockMvcRequestBuilders.post("/register/").contentType(MediaType.APPLICATION_JSON).content(
+		mockMvc.perform(MockMvcRequestBuilders.post("/register").contentType(MediaType.APPLICATION_JSON).content(
 				"{ \"emailId\": \"msowjanya2014@gmail.com\", \"password\" : \"Sowji@123\", \"phoneNumber\" : \"9100289102\" , \"userNmae\": \"sowjanya\"}")
 				.accept(MediaType.APPLICATION_JSON)).andExpect(jsonPath("$.message").exists())
 				.andExpect(jsonPath("$.status").exists())
@@ -49,25 +49,25 @@ public class UserControllerTest {
                 .andExpect(jsonPath("$.status").value(-1)).andDo(print());
 	}
 
-	@Test
+	/*@Test
 	public void activationTest() throws Exception {
-		mockMvc.perform(MockMvcRequestBuilders.get("/activateaccount/").requestAttr("request", "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiI1YjU1YzVlODRkNTczMDEzZWU1NTJhOTQiLCJpYXQiOjE1MzI0Mjg3NDgsImlzcyI6Im1zb3dqYW55YTIwMTRAZ21haWwuY29tIn0.oP0BUn6IR0y0U8Q3k9MdOffX658UMUTXMQ-JBpRCQPA")
+		mockMvc.perform(MockMvcRequestBuilders.get("/activateaccount").requestAttr("request", "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiI1YjU1YzVlODRkNTczMDEzZWU1NTJhOTQiLCJpYXQiOjE1MzI0Mjg3NDgsImlzcyI6Im1zb3dqYW55YTIwMTRAZ21haWwuY29tIn0.oP0BUn6IR0y0U8Q3k9MdOffX658UMUTXMQ-JBpRCQPA")
 				.accept(MediaType.APPLICATION_JSON)).andExpect(jsonPath("$.message").exists())
 				.andExpect(jsonPath("$.status").exists())
 				.andExpect(jsonPath("$.message").value("account activated Successfull!!"));
 
-	}
+	}*/
 
 	@Test
 	public void forgotPasswordTest() throws Exception {
-		mockMvc.perform(MockMvcRequestBuilders.post("/forgotpassword/").param("emailId", "msowjanya2014@gmail.com")
+		mockMvc.perform(MockMvcRequestBuilders.post("/forgotpassword").param("emailId", "msowjanya2014@gmail.com")
 				.accept(MediaType.APPLICATION_JSON)).andExpect(jsonPath("$.message").exists())
 				.andExpect(jsonPath("$.status").exists())
 				.andExpect(jsonPath("$.message").value("link to set your password has been sent successfully"))
 				.andExpect(jsonPath("$.status").value(200)).andDo(print());
 	}
 	
-	@Test
+	/*@Test
 	public void setpasswordTest() throws Exception
 	{
 		mockMvc.perform(MockMvcRequestBuilders.post("/resetpassword/").contentType(MediaType.APPLICATION_JSON).content(
@@ -76,20 +76,6 @@ public class UserControllerTest {
 				.andExpect(jsonPath("$.status").exists())
 				.andExpect(jsonPath("$.message").value("password changed successfully!!!"))
                 .andExpect(jsonPath("$.status").value(200)).andDo(print());
-	}
-	/*
-	 * @Test public void loginTest() throws Exception
-	 * 
-	 * {
-	 * mockMvc.perform(MockMvcRequestBuilders.post("/login/").contentType(MediaType.
-	 * APPLICATION_JSON).
-	 * content("{ \"emailId\": \"msowjanya2014@gmail.com\", \"password\": \"Sowji@123\"}"
-	 * )
-	 * .accept(MediaType.APPLICATION_JSON)).andExpect(jsonPath("$.message").exists()
-	 * ) .andExpect(jsonPath("$.status").exists())
-	 * 
-	 * .andExpect(jsonPath("$.message").value("logged in successfully"))
-	 * .andExpect(jsonPath("$.status").value(200)).andDo(print()); }
-	 */
-
+	}*/
+	
 }

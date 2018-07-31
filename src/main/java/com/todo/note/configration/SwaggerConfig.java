@@ -15,6 +15,16 @@ import springfox.documentation.swagger.web.SecurityConfiguration;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
 import static springfox.documentation.builders.PathSelectors.regex;
 import static com.google.common.base.Predicates.or;
+
+/*************************************************************************************************************
+ *
+ * purpose:swagger configuration
+ * 
+ * @author sowjanya467
+ * @version 1.0
+ * @since 10-07-18
+ *
+ **************************************************************************************************/
 @Configuration
 @EnableSwagger2
 public class SwaggerConfig {
@@ -24,6 +34,17 @@ public class SwaggerConfig {
 		return new Docket(DocumentationType.SWAGGER_2).groupName("Authorization").apiInfo(apiInfo()).select()
 				.paths(postPaths()).build();
 	}
+	
+                                  
+//	    @Bean
+//	    public Docket api() { 
+//	        return new Docket(DocumentationType.SWAGGER_2)  
+//	          .select()                                  
+//	          .apis(RequestHandlerSelectors.)              
+//	          .paths(PathSelectors.any())                          
+//	          .build();                                           
+//	    }
+	
 
 	private Predicate<String> postPaths() {
 		return or(regex("/api/posts.*"), regex("/*/.*"));
@@ -35,13 +56,10 @@ public class SwaggerConfig {
 				.termsOfServiceUrl("http://bsajhsdj.com").contact("msowjanya2014@gmail.com").license("sowjanya License")
 				.licenseUrl("msowjanya2014@gmail.com").version("1.0").build();
 	}
-	
-   
-    @Bean
-    SecurityConfiguration security()
-    {
-        return new SecurityConfiguration(null, null, null, null, "Token", ApiKeyVehicle.HEADER, "Authorization", ",");
-    }
 
+	@Bean
+	SecurityConfiguration security() {
+		return new SecurityConfiguration(null, null, null, null, "token", ApiKeyVehicle.HEADER, "token", ",");
+	}
 
 }

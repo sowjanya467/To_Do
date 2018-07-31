@@ -1,13 +1,16 @@
 package com.todo.note.securityservice.jwt;
 import java.util.Date;
 
+import org.springframework.stereotype.Component;
+
 import com.todo.note.userservice.model.*;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtBuilder;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
-public class JwtTokens 
+@Component("tokens")
+public class JwtTokens  
 {
 	final static String KEY = "sowjanya";
 
@@ -20,9 +23,8 @@ public class JwtTokens
 	public String createToken(User user) {
 		SignatureAlgorithm signatureAlgorithm = SignatureAlgorithm.HS256;
 
-		// Long id=user.getUserId();
-		String subject = user.getEmailId();
-		String issuer = user.getUserName();
+		String subject = user.get_id();
+		String issuer = user.getEmailId();
 		Date date = new Date();
 		JwtBuilder builder = Jwts.builder().setSubject(subject).setIssuedAt(date).setIssuer(issuer)
 				.signWith(signatureAlgorithm, KEY);
@@ -36,12 +38,8 @@ public class JwtTokens
 	 * @param Jwt
 	 * @return 
 	 */
-	public Claims parseJwt(String Jwt) {
-		Claims claims = Jwts.parser().setSigningKey(KEY).parseClaimsJws(Jwt).getBody();
-		System.out.println("subject-" + claims.getSubject());
-		System.out.println("issuer-" + claims.getIssuer());
-		System.out.println("date-" + claims.getIssuedAt());
-		return claims;
+	public Claims parseJwt(String jwt) {
+		return Jwts.parser().setSigningKey(KEY).parseClaimsJws(jwt).getBody();
 
 	}
 

@@ -9,7 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
-import com.todo.note.userservice.model.ResponseModel;
+import com.todo.note.userservice.model.ResponseDto;
 
 /*************************************************************************************************************
  *
@@ -32,8 +32,8 @@ public class GlobalExceptionHandler {
 	 * @return
 	 */
 	@ExceptionHandler(UserExceptionHandling.class)
-	public ResponseEntity<ResponseModel> handleRegistrationException(UserExceptionHandling exception) {
-		ResponseModel response = new ResponseModel();
+	public ResponseEntity<ResponseDto> handleRegistrationException(UserExceptionHandling exception) {
+		ResponseDto response = new ResponseDto();
 		response.setMessage(exception.getMessage());
 		response.setStatus(-3);
 		return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
@@ -46,8 +46,8 @@ public class GlobalExceptionHandler {
 	 * @return
 	 */
 	@ExceptionHandler(LoginExceptionHandling.class)
-	public ResponseEntity<ResponseModel> handleLoginException(UserExceptionHandling exception) {
-		ResponseModel response = new ResponseModel();
+	public ResponseEntity<ResponseDto> handleLoginException(UserExceptionHandling exception) {
+		ResponseDto response = new ResponseDto();
 		response.setMessage(exception.getMessage());
 		response.setStatus(-3);
 		return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
@@ -60,8 +60,8 @@ public class GlobalExceptionHandler {
 	 * @return
 	 */
 	@ExceptionHandler(ToDoException.class)
-	public ResponseEntity<ResponseModel> handlesetPasswordException(ToDoException exception) {
-		ResponseModel response = new ResponseModel();
+	public ResponseEntity<ResponseDto> handleExceptions(ToDoException exception) {
+		ResponseDto response = new ResponseDto();
 		response.setMessage(exception.getMessage());
 		response.setStatus(-3);
 
@@ -77,9 +77,9 @@ public class GlobalExceptionHandler {
 	 * @return
 	 */
 	@ExceptionHandler(Exception.class)
-	public ResponseEntity<ResponseModel> handleException(Exception exception, HttpServletRequest request) {
+	public ResponseEntity<ResponseDto> handleException(Exception exception, HttpServletRequest request) {
 		logger.error("Error occured for: " + exception.getMessage(), exception);
-		ResponseModel response = new ResponseModel();
+		ResponseDto response = new ResponseDto();
 		response.setMessage("Something went wrong");
 		response.setStatus(-1);
 

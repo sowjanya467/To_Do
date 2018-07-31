@@ -1,0 +1,4 @@
+-------------------------------------------------------------------------------
+Test set: com.todo.note.userservicetest.UserControllerTest
+-------------------------------------------------------------------------------
+Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 10.474 s - in com.todo.note.userservicetest.UserControllerTest

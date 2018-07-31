@@ -3,7 +3,15 @@ package com.todo.note.noteservice.preconditions;
 import org.springframework.lang.Nullable;
 
 import com.todo.note.utility.exceptions.ToDoException;
-
+/*************************************************************************************************************
+*
+* purpose:PreConditions
+* 
+* @author sowjanya467
+* @version 1.0
+* @since 10-07-18
+*
+**************************************************************************************************/
 public class PreConditions {
 
 	 public static <T> T checkNotNull(T reference, @Nullable Object errorMessage) throws ToDoException {

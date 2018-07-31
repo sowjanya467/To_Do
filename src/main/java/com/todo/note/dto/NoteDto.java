@@ -4,6 +4,8 @@ import java.util.List;
 
 import javax.validation.constraints.NotBlank;
 
+import io.swagger.annotations.ApiModelProperty;
+
 public class NoteDto {
 
 	@NotBlank
@@ -12,13 +14,15 @@ public class NoteDto {
 	private String content;
 	private boolean pin;
 	private boolean archive;
-	private List<LabelDto> label;
+	@ApiModelProperty(hidden=true)
+	private List<Label> label;
 
-	public List<LabelDto> getLabel() {
+	public List<Label> getLabel() {
+	
 		return label;
 	}
 
-	public void setLabel(List<LabelDto> label) {
+	public void setLabel(List<Label> label) {
 		this.label = label;
 	}
 
@@ -55,3 +59,4 @@ public class NoteDto {
 	}
 
 }
+

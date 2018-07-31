@@ -6,12 +6,10 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 import java.util.Timer;
 import java.util.TimerTask;
-import java.util.stream.Collectors;
 
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
@@ -19,13 +17,15 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.todo.note.dto.LabelDto;
+import com.todo.note.dto.Label;
 import com.todo.note.dto.NoteDto;
 import com.todo.note.dto.UpdateNoteDto;
 import com.todo.note.dto.ViewNoteDto;
 import com.todo.note.noteservice.model.NoteModel;
 import com.todo.note.noteservice.preconditions.PreConditions;
+import com.todo.note.noteservice.repository.LabelElasticRepository;
 import com.todo.note.noteservice.repository.LabelRepository;
+import com.todo.note.noteservice.repository.NoteElasticRepository;
 import com.todo.note.noteservice.repository.NoteMongoRepository;
 import com.todo.note.userservice.model.User;
 import com.todo.note.userservice.repository.UserRepository;
@@ -34,11 +34,17 @@ import com.todo.note.utility.email.SecurityConfig;
 import com.todo.note.utility.exceptions.LoginExceptionHandling;
 import com.todo.note.utility.exceptions.ToDoException;
 import com.todo.note.utility.exceptions.UserExceptionHandling;
+import com.todo.note.utility.messages.Messages;
 
-/**
- * @author bridgelabz
+/*************************************************************************************************************
  *
- */
+ * purpose:Note Service implementation
+ * 
+ * @author sowjanya467
+ * @version 1.0
+ * @since 19-07-18
+ *
+ **************************************************************************************************/
 @Service
 public class NoteServiceImplementation implements NoteService {
 	@Autowired
@@ -51,6 +57,12 @@ public class NoteServiceImplementation implements NoteService {
 
 	@Autowired
 	private LabelRepository labelRepository;
+	@Autowired
+	private NoteElasticRepository noteElasticRepo;
+	@Autowired
+	private LabelElasticRepository labelElasticRepo;
+	@Autowired
+	Messages messages;
 
 	Timer timer;
 	Utility utility = new Utility();
@@ -72,49 +84,33 @@ public class NoteServiceImplementation implements NoteService {
 	 * @throws ToDoException
 	 */
 	@Override
-	public void createNote(NoteDto note, String jwtToken)
+	public String createNote(NoteDto note, String userId)
 			throws LoginExceptionHandling, UserExceptionHandling, ToDoException {
-		logger.info("creating note");
-		String userId = utility.parseJwt(jwtToken).getSubject();
+		logger.info(messages.get("216"));
 		Optional<User> user = userRepository.findById(userId);
-		PreConditions.isPresentInDb(user.isPresent(), "user does not exist");
-		PreConditions.checkNotNull(note.getTitle(), "title should not be empty");
-		PreConditions.checkNotNull(note.getContent(), "content should not be empty");
-		// PreConditions.checkNotNull(note);
 
+		PreConditions.isPresentInDb(user.isPresent(), messages.get("105"));
+		PreConditions.checkNotNull(note.getTitle(), messages.get("106"));
+		PreConditions.checkNotNull(note.getContent(), messages.get("107"));
+
+		if (note.getLabel() != null) {
+			logger.debug(messages.get("222"));
+
+		}
 		NoteModel newNote = mapper.map(note, NoteModel.class);
+
 		newNote.setUserId(userId);
 
-		newNote.setId(sdf.format(new Date()));
+		String id = newNote.setId(sdf.format(new Date()));
+
 		newNote.setCreatedAt(dtf.format(now));
 		newNote.setEditedAt(dtf.format(now));
 		newNote = noteRepository.save(newNote);
-		List<NoteModel> listV = noteRepository.findAll();
-		/*
-		 * if(newNote.getLabel()==null) {
-		 * 
-		 * }
-		 * 
-		 * System.out.println(listV); Stream<List<LabelDto>> labels =
-		 * listV.stream().map(p -> p.getLabel()); Map<String, List<LabelDto>> x =
-		 * labels.flatMap(Collection<LabelDto>::stream).collect(Collectors.groupingBy(p-
-		 * >p.getLabelName())) ;
-		 * 
-		 * 
-		 * // Map<String, List<LabelDto>> x =
-		 * labels.stream().collect(Collectors.groupingBy(p -> p.getLabelName())); //
-		 * Iterator<String> it = x.keySet().iterator(); while (it.hasNext()) { String
-		 * type = it.next();
-		 * 
-		 * List<LabelDto> value = x.get(type); System.out.println(value);
-		 * System.out.println(type);
-		 * 
-		 * System.out.println("-------------------------------");
-		 */
-		// }
-		// labelRepository.save(x);
-		logger.info("note created");
+		noteElasticRepo.save(newNote);
 
+		logger.info(messages.get("229"));
+
+		return id;
 	}
 
 	/**
@@ -129,22 +125,21 @@ public class NoteServiceImplementation implements NoteService {
 	 * @throws ToDoException
 	 */
 	@Override
-	public void updateNote(String jwtToken, String id, UpdateNoteDto notes)
-			throws LoginExceptionHandling, ToDoException {
-		logger.info("updating the note");
+	public void updateNote(String userId, String id, UpdateNoteDto notes) throws LoginExceptionHandling, ToDoException {
+		logger.info(messages.get("217"));
 
-		String userId = utility.parseJwt(jwtToken).getSubject();
 		Optional<User> user = userRepository.findById(userId);
-		PreConditions.isPresentInDb(user.isPresent(), "user does not exist");
+		PreConditions.isPresentInDb(user.isPresent(), messages.get("105"));
+		logger.debug(messages.get("230"));
 		Optional<NoteModel> note = noteRepository.findById(id);
-		PreConditions.isPresentInDb(note.isPresent(), "note does not exist");
+		PreConditions.isPresentInDb(note.isPresent(), messages.get("109"));
+		logger.debug(messages.get("231"));
 		NoteModel note1 = mapper.map(notes, NoteModel.class);
-
 		note1.setContent(notes.getContent());
 		note1.setTitle(notes.getContent());
 		note1.setEditedAt(dtf.format(now));
-
 		noteRepository.save(note1);
+		noteElasticRepo.save(note1);
 
 	}
 
@@ -158,18 +153,17 @@ public class NoteServiceImplementation implements NoteService {
 	 * @throws LoginExceptionHandling
 	 * @throws ToDoException
 	 */
-	public void deleteNote(String id, String token) throws LoginExceptionHandling, ToDoException {
-		logger.info("deleting the note");
-		String userId = utility.parseJwt(token).getSubject();
+	public void deleteNote(String id, String userId) throws LoginExceptionHandling, ToDoException {
+		logger.info(messages.get("232"));
 		Optional<User> user = userRepository.findById(userId);
 		Optional<NoteModel> note = noteRepository.findById(id);
 
-		PreConditions.isPresentInDb(user.isPresent(), "user does not exist");
-		PreConditions.isPresentInDb(note.isPresent(), "note does not exist");
+		PreConditions.isPresentInDb(user.isPresent(), messages.get("105"));
+		PreConditions.isPresentInDb(note.isPresent(), messages.get("109"));
 
 		if (note.get().isTrash() == false) {
-
-			throw new ToDoException("note cant be deleted permanently as it is not in trash");
+			logger.error(messages.get("233"));
+			throw new ToDoException(messages.get("110"));
 		}
 		noteRepository.deleteById(id);
 
@@ -186,9 +180,8 @@ public class NoteServiceImplementation implements NoteService {
 	public void archiveNote(String id) throws ToDoException {
 
 		Optional<NoteModel> note = noteRepository.findById(id);
-		PreConditions.isPresentInDb(note.isPresent(), "note does not exist");
-		PreConditions.isPresentInDb(!note.get().isArchive(), "note is already archived");
-
+		PreConditions.isPresentInDb(note.isPresent(), messages.get("109"));
+		PreConditions.isPresentInDb(!note.get().isArchive(), messages.get("111"));
 		NoteModel notes = note.get();
 		notes.setArchive(true);
 		noteRepository.save(notes);
@@ -206,12 +199,13 @@ public class NoteServiceImplementation implements NoteService {
 	public void setPin(String id) throws ToDoException {
 		Optional<NoteModel> note = noteRepository.findById(id);
 
-		PreConditions.isPresentInDb(note.isPresent(), "note does not exist");
-		PreConditions.isPresentInDb(!note.get().isPin(), "note is already pinned");
+		PreConditions.isPresentInDb(note.isPresent(), messages.get("109"));
+		logger.debug(messages.get("109"));
+		PreConditions.isPresentInDb(!note.get().isPin(), messages.get("112"));
 		NoteModel notes = note.get();
 		notes.setPin(true);
 		noteRepository.save(notes);
-		logger.info("note is pinned");
+		logger.info(messages.get("204"));
 
 	}
 
@@ -226,9 +220,9 @@ public class NoteServiceImplementation implements NoteService {
 	public void trashNote(String id) throws ToDoException {
 		Optional<NoteModel> note = noteRepository.findById(id);
 
-		PreConditions.isPresentInDb(note.isPresent(), "note does not exist");
+		PreConditions.isPresentInDb(note.isPresent(), messages.get("105"));
 
-		PreConditions.isPresentInDb(!note.get().isTrash(), "note is already trashed");
+		PreConditions.isPresentInDb(!note.get().isTrash(), messages.get("113"));
 
 		NoteModel notes = note.get();
 		notes.setTrash(true);
@@ -246,33 +240,25 @@ public class NoteServiceImplementation implements NoteService {
 	public void restoreTrashedNote(String id) throws ToDoException {
 		Optional<NoteModel> note = noteRepository.findById(id);
 
-		PreConditions.isPresentInDb(note.isPresent(), "note does not exist");
-		PreConditions.isPresentInDb(note.get().isTrash(),
-				"note does not exist in trash it might have been restored or deleted ");
+		PreConditions.isPresentInDb(note.isPresent(), messages.get("105"));
+		PreConditions.isPresentInDb(note.get().isTrash(), messages.get("115"));
 
 		NoteModel notes = note.get();
 		notes.setTrash(false);
 		noteRepository.save(notes);
 	}
 
-	@Override
-	public void deleteTrashedNote(String id) {
-		// TODO Auto-generated method stub
-
-	}
-
 	/**
 	 * display all trashed notes
 	 * 
 	 * @param request
-	 * @return
+	 * @return noteList
 	 * @throws ToDoException
 	 */
 	@Override
-	public List<NoteModel> viewTrashNotes(String token) throws ToDoException {
-		String userId = utility.parseJwt(token).getSubject();
+	public List<NoteModel> viewTrashNotes(String userId) throws ToDoException {
 		Optional<User> user = userRepository.findById(userId);
-		PreConditions.isPresentInDb(user.isPresent(), "user does not exist");
+		PreConditions.isPresentInDb(user.isPresent(), messages.get("105"));
 
 		List<NoteModel> noteList = noteRepository.findByUserId(userId);
 		List<NoteModel> viewNotes = new ArrayList<>();
@@ -290,14 +276,13 @@ public class NoteServiceImplementation implements NoteService {
 	 * display all archived notes
 	 * 
 	 * @param request
-	 * @return
+	 * @return noteList
 	 * @throws ToDoException
 	 */
 	@Override
-	public List<NoteModel> viewArchivedNotes(String token) throws ToDoException {
-		String userId = utility.parseJwt(token).getSubject();
+	public List<NoteModel> viewArchivedNotes(String userId) throws ToDoException {
 		Optional<User> user = userRepository.findById(userId);
-		PreConditions.isPresentInDb(user.isPresent(), "user does not exist");
+		PreConditions.isPresentInDb(user.isPresent(), messages.get("105"));
 
 		List<NoteModel> noteList = noteRepository.findByUserId(userId);
 		List<NoteModel> viewNotes = new ArrayList<>();
@@ -315,15 +300,14 @@ public class NoteServiceImplementation implements NoteService {
 	 * method to display all the notes
 	 * 
 	 * @param token
-	 * @return
+	 * @return noteList
 	 * @throws ToDoException
 	 */
 	@Override
-	public List<NoteModel> viewNotes(String token) throws ToDoException {
+	public List<NoteModel> viewNotes(String userId) throws ToDoException {
 
-		String userId = utility.parseJwt(token).getSubject();
 		Optional<User> user = userRepository.findById(userId);
-		PreConditions.isPresentInDb(user.isPresent(), "user does not exist");
+		PreConditions.isPresentInDb(user.isPresent(), messages.get("105"));
 
 		List<NoteModel> noteList = noteRepository.findByUserId(userId);
 
@@ -339,40 +323,22 @@ public class NoteServiceImplementation implements NoteService {
 	 * @throws ToDoException
 	 */
 	@Override
-	public ViewNoteDto viewNote(String noteId, String token) throws ToDoException {
-		Optional<NoteModel> note = validateNoteAndUser(noteId, utility.parseJwt(token).getSubject());
+	public ViewNoteDto viewNote(String noteId, String userId) throws ToDoException {
+		Optional<NoteModel> note = validateNoteAndUser(noteId, userId);
 		if (note.get().isTrash()) {
-			throw new ToDoException(
-					"Note with given id could not be found or note you are looking for might have been trashed");
+			throw new ToDoException(messages.get("115"));
 		}
 		return mapper.map(note.get(), ViewNoteDto.class);
 
 	}
 
-	/**
-	 * 
-	 * @param id
-	 * @param label
-	 * @throws ToDoException
-	 */
-	public void addLabel(String id, String label) throws ToDoException {
-
-		Optional<NoteModel> notes = noteRepository.findById(id);
-		PreConditions.isPresentInDb(notes.isPresent(), "note does not exist");
-
-		NoteModel note = new NoteModel();
-		// note.setLabel(label);
-		note.setEditedAt(dtf.format(now));
-		noteRepository.save(note);
-	}
-
 	private Optional<NoteModel> validateNoteAndUser(String noteId, String id) throws ToDoException {
 
 		Optional<User> user = userRepository.findById(id);
-		PreConditions.isPresentInDb(user.isPresent(), "user does not exist");
+		PreConditions.isPresentInDb(user.isPresent(), messages.get("105"));
 
-		Optional<NoteModel> note = noteRepository.findById(id);
-		PreConditions.isPresentInDb(note.isPresent(), "note does not exist");
+		Optional<NoteModel> note = noteRepository.findById(noteId);
+		PreConditions.isPresentInDb(note.isPresent(), messages.get("109"));
 
 		return note;
 	}
@@ -388,8 +354,8 @@ public class NoteServiceImplementation implements NoteService {
 	public void unarchiveNote(String id) throws ToDoException {
 
 		Optional<NoteModel> note = noteRepository.findById(id);
-		PreConditions.isPresentInDb(note.isPresent(), "note does not exist");
-		PreConditions.isPresentInDb(note.get().isArchive(), "note is already unarchived");
+		PreConditions.isPresentInDb(note.isPresent(), messages.get("109"));
+		PreConditions.isPresentInDb(note.get().isArchive(), messages.get("116"));
 
 		NoteModel notes = note.get();
 		notes.setArchive(false);
@@ -409,8 +375,8 @@ public class NoteServiceImplementation implements NoteService {
 
 		Optional<NoteModel> note = noteRepository.findById(id);
 
-		PreConditions.isPresentInDb(note.isPresent(), "note does not exist");
-		PreConditions.isPresentInDb(note.get().isPin(), "note is already unpinned");
+		PreConditions.isPresentInDb(note.isPresent(), messages.get("109"));
+		PreConditions.isPresentInDb(note.get().isPin(), messages.get("117"));
 		NoteModel notes = note.get();
 		notes.setPin(false);
 		noteRepository.save(notes);
@@ -428,10 +394,9 @@ public class NoteServiceImplementation implements NoteService {
 	 * @throws ParseException
 	 */
 	@Override
-	public void remainder(String token, String noteId, String reminderTime) throws ToDoException, ParseException {
-		String userId = utility.parseJwt(token).getSubject();
+	public void remainder(String userId, String noteId, String reminderTime) throws ToDoException, ParseException {
 		Optional<User> user = userRepository.findById(userId);
-		PreConditions.isPresentInDb(user.isPresent(), "user does not exist");
+		PreConditions.isPresentInDb(user.isPresent(), messages.get("105"));
 
 		List<NoteModel> noteList = noteRepository.findByUserId(userId);
 
@@ -439,7 +404,7 @@ public class NoteServiceImplementation implements NoteService {
 			if (note.getId().equals(noteId)) {
 
 				Date reminder = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").parse(reminderTime);
-				long timeDifference = reminder.getTime() - new Date().getTime();
+				long timeDif = reminder.getTime() - new Date().getTime();
 				timer = new Timer();
 				timer.schedule(new TimerTask() {
 
@@ -447,7 +412,7 @@ public class NoteServiceImplementation implements NoteService {
 					public void run() {
 						logger.info("Reminder :" + note.getId().toString());
 					}
-				}, timeDifference);
+				}, timeDif);
 			}
 		}
 	}
@@ -462,46 +427,34 @@ public class NoteServiceImplementation implements NoteService {
 	 * @throws ToDoException
 	 */
 	@Override
-	public void createNewLabel(String labelName, String token, String noteId) throws ToDoException {
-		String userId = utility.parseJwt(token).getSubject();
+	public void createNewLabel(String labelName, String userId, String noteId) throws ToDoException {
 
-		logger.info("creating label");
+		logger.info(messages.get("243"));
 		Optional<User> user = userRepository.findById(userId);
-		PreConditions.isPresentInDb(user.isPresent(), "user does not exist");
+		PreConditions.isPresentInDb(user.isPresent(), messages.get("105"));
 
 		Optional<NoteModel> note = noteRepository.findById(noteId);
-		PreConditions.isPresentInDb(note.isPresent(), "note does not exist");
+		PreConditions.isPresentInDb(note.isPresent(), messages.get("109"));
 		List<NoteModel> noteList = noteRepository.findByUserId(userId);
-		LabelDto label = new LabelDto();
-
+		Optional<Label> labelFound = labelRepository.findByLabelName(labelName);
+		PreConditions.isPresentInDb(!labelFound.isPresent(), messages.get("120"));
+		Label label = new Label();
 		for (NoteModel n : noteList) {
 			if (n.getId().equals(noteId)) {
-				logger.info("label created");
+				logger.info(messages.get("212"));
 				label.setLabelName(labelName);
+				label.setUserid(userId);
 				labelRepository.save(label);
+				labelElasticRepo.save(label);
 				NoteModel notelabel = mapper.map(label, NoteModel.class);
 				n.getLabel().add(label);
 				noteRepository.save(n);
 
 				System.out.println(notelabel);
-				logger.info("label mapped to note");
 
 			}
 
 		}
-
-	}
-
-	public Iterable<LabelDto> getNotesOfLabel(String labelId, String userId) throws ToDoException {
-		if (!userRepository.findById(userId).isPresent()) {
-			throw new ToDoException("User not found");
-		}
-		LabelDto labelFound = labelRepository.findBy_id(labelId);
-		if (labelFound == null) {
-			throw new ToDoException("Label not found");
-		}
-
-		return null;
 
 	}
 
@@ -515,37 +468,36 @@ public class NoteServiceImplementation implements NoteService {
 	 * @throws ToDoException
 	 */
 	@Override
-	public void addLabel(String labelId, String token, String noteId) throws ToDoException {
-		String userId = utility.parseJwt(token).getSubject();
+	public void addLabel(String labelId, String userId, String noteId) throws ToDoException {
 
-		logger.info("adding label");
+		logger.info(messages.get("234"));
 		Optional<User> user = userRepository.findById(userId);
-		PreConditions.isPresentInDb(user.isPresent(), "user does not exist");
+		PreConditions.isPresentInDb(user.isPresent(), messages.get("105"));
 
 		Optional<NoteModel> note = noteRepository.findById(noteId);
-		PreConditions.isPresentInDb(note.isPresent(), "note does not exist");
-		List<NoteModel> noteList = noteRepository.findByUserId(userId);
+		PreConditions.isPresentInDb(note.isPresent(), messages.get("109"));
 
 		// Check if note has a list of labels or not, if not ,then create a new List
 		if (note.get().getLabel() == null) {
-			System.out.println("----------------");
-			List<LabelDto> newLabelList = new ArrayList<>();
+			List<Label> newLabelList = new ArrayList<>();
 			note.get().setLabel(newLabelList);
 		}
 
 		// check if label is present in labelRepository
-		LabelDto labelFound = labelRepository.findBy_id(labelId);
-		LabelDto label = new LabelDto();
+		Optional<Label> labelFound = labelRepository.findById(labelId);
+		Label label = new Label();
 
 		for (int i = 0; i < note.get().getLabel().size(); i++) {
-			if (labelId.equals(note.get().getLabel().get(i).get_id())) {
+			if (labelId.equals(note.get().getLabel().get(i).getLabelId())) {
 
-				throw new ToDoException("Label already present");
+				logger.error(messages.get("235"));
+				throw new ToDoException(messages.get("120"));
 			}
 		}
 
-		label.set_id(labelFound.get_id());
-		label.setLabelName(labelFound.getLabelName());
+		System.out.println("labelid" + labelFound.get().getLabelId());
+		label.setLabelId(labelFound.get().getLabelId());
+		label.setLabelName(labelFound.get().getLabelName());
 		note.get().getLabel().add(label);
 		noteRepository.save(note.get());
 
@@ -561,27 +513,28 @@ public class NoteServiceImplementation implements NoteService {
 	 * @throws ToDoException
 	 */
 	@Override
-	public void deleteLabel(String labelId, String token) throws ToDoException {
+	public void deleteLabel(String labelId, String userId) throws ToDoException {
 
-		String userId = utility.parseJwt(token).getSubject();
-
-		logger.info("adding label");
+		logger.info(messages.get("242"));
 		Optional<User> user = userRepository.findById(userId);
-		PreConditions.isPresentInDb(user.isPresent(), "user does not exist");
-		LabelDto labelFound = labelRepository.findBy_id(labelId);
+		PreConditions.isPresentInDb(user.isPresent(), messages.get("105"));
+		Optional<Label> labelFound = labelRepository.findById(labelId);
 		if (labelFound == null) {
-			throw new ToDoException("Label not found");
+			logger.error(messages.get("236"));
+			throw new ToDoException(messages.get("119"));
 		}
 		labelRepository.deleteById(labelId);
-		List<NoteModel> noteList = noteRepository.findByUserBuy(userId, labelId);
+		List<NoteModel> noteList = noteRepository.findByUserIdandLabel(userId, labelId);
 
 		for (int i = 0; i < noteList.size(); i++) {
 
 			for (int j = 0; j < noteList.get(i).getLabel().size(); j++) {
 
-				if (labelId.equals(noteList.get(i).getLabel().get(j).get_id())) {
+				if (labelId.equals(noteList.get(i).getLabel().get(j).getLabelId())) {
+					logger.debug(messages.get("237"));
 					noteList.get(i).getLabel().remove(j);
 					NoteModel note = noteList.get(i);
+					logger.info(messages.get("238"));
 					noteRepository.save(note);
 					break;
 				}
@@ -591,11 +544,68 @@ public class NoteServiceImplementation implements NoteService {
 		}
 	}
 
+	/**
+	 * update label
+	 * 
+	 * @param labelName
+	 * @param token
+	 * @param noteId
+	 * @return
+	 * @throws ToDoException
+	 */
 	@Override
-	public void demo(String labelName, String token, String noteId) {
-		String userId = utility.parseJwt(token).getSubject();
-		List<NoteModel> x = noteRepository.findByUserBuy(userId, "label");
-		System.out.println(x);
+	public void updateLabel(String labelId, String userId, String newLabelName) throws ToDoException {
+		logger.info(messages.get("239"));
+		Optional<User> user = userRepository.findById(userId);
+		PreConditions.isPresentInDb(user.isPresent(), messages.get("105"));
+		Optional<Label> labelFound = labelRepository.findById(labelId);
+		PreConditions.isPresentInDb(labelFound.isPresent(), messages.get("118"));
+		labelFound.get().setLabelName(newLabelName);
+		labelRepository.save(labelFound.get());
+
+		List<NoteModel> noteList = noteRepository.findByUserIdandLabel(userId, labelId);
+
+		for (int i = 0; i < noteList.size(); i++) {
+
+			if (noteList.get(i).getLabel() == null) {
+				continue;
+			}
+			for (int j = 0; j < noteList.get(i).getLabel().size(); j++) {
+
+				if (labelId.equals(noteList.get(i).getLabel().get(j).getLabelId())) {
+					noteList.get(i).getLabel().get(j).setLabelName(newLabelName);
+					NoteModel note = noteList.get(i);
+					logger.info(messages.get("240"));
+
+					noteRepository.save(note);
+					break;
+				}
+
+			}
+		}
 
 	}
+
+	/**
+	 * displaying labels
+	 * 
+	 * @param labelName
+	 * @param token
+	 * @param noteId
+	 * @return
+	 * @throws ToDoException
+	 */
+	@Override
+	public List<Label> viewLabels(String userId) throws ToDoException {
+
+		logger.info(messages.get("241"));
+		Optional<User> user = userRepository.findById(userId);
+		PreConditions.isPresentInDb(user.isPresent(), messages.get("105"));
+
+		List<Label> labelList = labelRepository.findAllByUserid(userId);
+		return labelList;
+
+	}
+
+	
 }

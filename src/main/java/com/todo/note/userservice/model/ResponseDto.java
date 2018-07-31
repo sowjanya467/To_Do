@@ -8,7 +8,7 @@ package com.todo.note.userservice.model;
 *
 * **************************************************************************************************/
 
-public class ResponseModel 
+public class ResponseDto 
 {
 	int status;
 	String message;

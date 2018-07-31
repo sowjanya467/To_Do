@@ -9,13 +9,17 @@ import javax.validation.constraints.NotBlank;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.LastModifiedDate;
-import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.elasticsearch.annotations.Document;
+//import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.todo.note.dto.LabelDto;
+import com.todo.note.dto.Label;
 
-@Document(collection = "notedb")
+import io.swagger.annotations.ApiModelProperty;
+
+//@Document(collection = "notedb")
+@Document(indexName="noteelasticsearch",type="note")
 @JsonIgnoreProperties(value = { "createdAt", "editedAt" }, allowGetters = true)
 public class NoteModel {
 
@@ -24,7 +28,6 @@ public class NoteModel {
 
 	@NotBlank
 	private String userId;
-
 	@NotBlank
 	private String title;
 	@NotBlank
@@ -40,21 +43,21 @@ public class NoteModel {
 	private boolean trash;
 	private Date date;
 	@Field("label")
-	private List<LabelDto> label;
+	private List<Label> label;
 	
 
 	
 
 	
 
-	public List<LabelDto> getLabel() {
+	public List<Label> getLabel() {
 		if(label==null) {
 			this.label=new ArrayList<>();
 		}
 		return label;
 	}
 
-	public void setLabel(List<LabelDto> label) {
+	public void setLabel(List<Label> label) {
 		this.label = label;
 	}
 
@@ -70,8 +73,8 @@ public class NoteModel {
 		return id;
 	}
 
-	public void setId(String id) {
-		this.id = id;
+	public String setId(String id) {
+		return this.id = id;
 	}
 
 	public String getUserId() {

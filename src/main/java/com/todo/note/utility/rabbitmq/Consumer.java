@@ -19,7 +19,6 @@ public class Consumer
 	public void reciveMsg(MailModel mail) throws MessagingException
 	{
 		
-//		System.out.println(mail);
 		emailService.sendMail(mail);
 	}
 

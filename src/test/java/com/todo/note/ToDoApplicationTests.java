@@ -1,4 +1,4 @@
-package com.todo.note;
+/*package com.todo.note;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -14,3 +14,4 @@ public class ToDoApplicationTests {
 	}
 
 }
+*/

@@ -4,8 +4,11 @@ import java.util.Date;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import com.todo.note.userservice.model.RegistrationModel;
+import org.springframework.lang.Nullable;
+
+import com.todo.note.userservice.model.RegistrationDto;
 import com.todo.note.userservice.model.User;
+import com.todo.note.utility.exceptions.ToDoException;
 import com.todo.note.utility.exceptions.UserExceptionHandling;
 
 import io.jsonwebtoken.Claims;
@@ -38,7 +41,7 @@ public class Utility {
 	 * @throws UserExceptionHandling
 	 */
 
-	public boolean isValidateAllFields(RegistrationModel register) throws UserExceptionHandling {
+	public boolean isValidateAllFields(RegistrationDto register) throws UserExceptionHandling {
 		if (!validateEmailAddress(register.getEmailId())) {
 			throw new UserExceptionHandling("emailid not valid  Exception");
 		} else if (!isValidUserName(register.getUserName())) {
@@ -119,7 +122,7 @@ public class Utility {
 		return builder.compact();
 
 	}
-	public static <T> T checkNotNull(T resource) throws UserExceptionHandling
+	public  <T> T checkNotNull(T resource) throws UserExceptionHandling
 	{
 		if(resource==null)
 		{
@@ -129,17 +132,23 @@ public class Utility {
 		return resource;
 		
 	}
-	public static <T> T CheckNull(T resource) throws UserExceptionHandling {
+	public  <T> T CheckNull(T resource) throws UserExceptionHandling {
         if (resource == null) {
             throw new UserExceptionHandling(("note with this id does not exist"));
         }
         return resource;
     }
-	public static <T> T CheckPass(T resource) throws UserExceptionHandling {
+	public  <T> T CheckPassword(T resource) throws UserExceptionHandling {
         if (resource == null) {
             throw new UserExceptionHandling(("invalid password"));
         }
         return resource;
     }
 
+	public boolean isPresentInDb(boolean reference,@Nullable Object errorMessage) throws ToDoException {
+        if (!reference) {
+            throw new ToDoException(String.valueOf(errorMessage));
+        }
+        return reference;
+    }
 }

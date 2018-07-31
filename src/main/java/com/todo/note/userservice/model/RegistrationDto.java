@@ -11,7 +11,7 @@ import java.io.Serializable;
 *
 * **************************************************************************************************/
 
-public class RegistrationModel implements Serializable {
+public class RegistrationDto implements Serializable {
 
 	
 	private static final long serialVersionUID = 1L;

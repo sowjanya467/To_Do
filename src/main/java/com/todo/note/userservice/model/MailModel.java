@@ -5,21 +5,15 @@ import java.io.Serializable;
 import org.springframework.stereotype.Service;
 
 @Service
-public class MailModel implements Serializable
-{
-	/**
-	 * 
-	 */
+public class MailModel implements Serializable {
+	
 	private static final long serialVersionUID = 1L;
 
 	private String toMailAddress;
 
 	private String subject;
 
-
 	private String body;
-
-	private String mailSign;
 
 	public String getToMailAddress() {
 		return toMailAddress;
@@ -45,21 +39,10 @@ public class MailModel implements Serializable
 		this.body = body;
 	}
 
-	public String getMailSign() {
-		return mailSign;
-	}
-
-	public void setMailSign(String mailSign) {
-		this.mailSign = mailSign;
-	}
-
 	@Override
 	public String toString() {
-		return "MailModel [toMailAddress=" + toMailAddress + ", subject=" + subject + ", body=" + body + ", mailSign="
-				+ mailSign + "]";
+		return "MailModel [toMailAddress=" + toMailAddress + ", subject=" + subject + ", body=" + body + "]";
 	}
 
 	
-
-
 }

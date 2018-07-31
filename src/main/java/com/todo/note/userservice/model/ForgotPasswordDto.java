@@ -8,7 +8,7 @@ package com.todo.note.userservice.model;
 *
 * **************************************************************************************************/
 
-public class ForgotPasswordModel
+public class ForgotPasswordDto
 {
 	String newPassword;
 	String confirmPassword;

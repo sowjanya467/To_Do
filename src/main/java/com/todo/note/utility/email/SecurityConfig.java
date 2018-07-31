@@ -4,7 +4,7 @@ import java.util.Date;
 
 import org.springframework.stereotype.Service;
 
-import com.todo.note.userservice.model.RegistrationModel;
+import com.todo.note.userservice.model.RegistrationDto;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtBuilder;
@@ -31,7 +31,7 @@ public class SecurityConfig {
 		return  Jwts.parser().setSigningKey(KEY).parseClaimsJws(jwt).getBody();
 
 	}
-	public String createTokens(RegistrationModel user) {
+	public String createTokens(RegistrationDto user) {
 		SignatureAlgorithm signatureAlgorithm = SignatureAlgorithm.HS256;
 
 		// Long id=user.getUserId();
