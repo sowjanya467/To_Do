@@ -9,6 +9,15 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
 import com.todo.note.securityservice.jwt.JwtTokens;
+/*************************************************************************************************************
+*
+* purpose:Interceptor
+* 
+* @author sowjanya467
+* @version 1.0
+* @since 19-07-18
+*
+**************************************************************************************************/
 
 
 

@@ -57,7 +57,7 @@ public class UserServiceImplementation implements UserService {
 	Environment environment;
 	@Autowired
 	ModelMapper mapper;
-	@Value("${hostandport}")
+	@Value("${host}")
     private String host;
 
 	@Autowired
@@ -124,7 +124,7 @@ public class UserServiceImplementation implements UserService {
 			String token = utility.createTokens(user);
 			mailDto.setToMailAddress(userReg.getEmailId());
 			mailDto.setSubject("Hi " + userReg.getUserName());
-			mailDto.setBody(environment.getProperty("activation.link") + token);
+			mailDto.setBody(messages.get("activation.link")+host+messages.get("601")+ token);
 			produce.produceMail(mailDto);
 
 		}

@@ -1,4 +1,8 @@
 -------------------------------------------------------------------------------
 Test set: com.todo.note.userservicetest.UserControllerTest
 -------------------------------------------------------------------------------
-Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 10.474 s - in com.todo.note.userservicetest.UserControllerTest
+Tests run: 2, Failures: 1, Errors: 0, Skipped: 0, Time elapsed: 8.697 s <<< FAILURE! - in com.todo.note.userservicetest.UserControllerTest
+forgotPasswordTest(com.todo.note.userservicetest.UserControllerTest)  Time elapsed: 0.123 s  <<< FAILURE!
+java.lang.AssertionError: JSON path "$.message" expected:<link to set your password has been sent successfully> but was:<user with this email id does not exist>
+	at com.todo.note.userservicetest.UserControllerTest.forgotPasswordTest(UserControllerTest.java:66)
+

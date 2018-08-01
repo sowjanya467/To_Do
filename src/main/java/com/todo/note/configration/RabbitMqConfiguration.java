@@ -1,4 +1,4 @@
-package com.todo.note.configration;
+/*package com.todo.note.configration;
 
 import org.springframework.amqp.core.AmqpTemplate;
 import org.springframework.amqp.core.Binding;
@@ -15,7 +15,7 @@ import org.springframework.boot.autoconfigure.amqp.SimpleRabbitListenerContainer
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-/*************************************************************************************************************
+*//*************************************************************************************************************
  *
  * purpose:rabbitmq configuration
  * 
@@ -23,7 +23,7 @@ import org.springframework.context.annotation.Configuration;
  * @version 1.0
  * @since 10-07-18
  *
- **************************************************************************************************/
+ **************************************************************************************************//*
 @Configuration
 public class RabbitMqConfiguration {
 
@@ -71,4 +71,4 @@ public class RabbitMqConfiguration {
 		factory.setMessageConverter(jsonMessageConverter());
 		return factory;
 	}
-}
+}*/

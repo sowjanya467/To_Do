@@ -1,4 +1,4 @@
-package com.todo.note.configration;
+/*package com.todo.note.configration;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -9,7 +9,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 import com.todo.note.noteservice.interceptor.Interceptor;
 import com.todo.note.securityservice.jwt.JwtTokens;
 import com.todo.note.userservice.model.User;
-/*************************************************************************************************************
+*//*************************************************************************************************************
 *
 * purpose:Redis configuration
 * 
@@ -17,7 +17,7 @@ import com.todo.note.userservice.model.User;
 * @version 1.0
 * @since 10-07-18
 *
-**************************************************************************************************/
+**************************************************************************************************//*
 @ComponentScan("com.todo.note")
 @Configuration
 public class RedisConfig {
@@ -51,3 +51,4 @@ public class RedisConfig {
 
 
 }
+*/
